@@ -4,6 +4,10 @@ NULLABLE = {"blank": True, "null": True}
 
 
 class Service(models.Model):
+    """
+    Модель предоставляемых услуг.
+    """
+
     name = models.CharField(
         max_length=300,
         help_text="Введите название услугу",
