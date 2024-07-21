@@ -13,7 +13,8 @@ class Employee(models.Model):
         help_text="Введите название направления",
         verbose_name="название",
     )
-    room = models.IntegerField(help_text="Укажите номер кабинета", verbose_name="кабинет"
+    room = models.IntegerField(
+        help_text="Укажите номер кабинета", verbose_name="кабинет"
     )
     first_name = models.CharField(
         max_length=100, help_text="Имя врача", verbose_name="имя", **NULLABLE

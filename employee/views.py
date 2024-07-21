@@ -31,6 +31,7 @@ class EmployeeDetailView(DetailView):
     """
     Класс контроллер просмотра подробностей сотрудника.
     """
+
     model = Employee
 
 

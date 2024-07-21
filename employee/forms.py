@@ -7,5 +7,5 @@ class EmployeeForm(forms.ModelForm):
     """
     Форма модели сотрудника.
     """
-    model = Employee
 
+    model = Employee

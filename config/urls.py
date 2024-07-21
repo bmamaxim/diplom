@@ -22,4 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("service.urls", namespace="service")),
     path("employee/", include("employee.urls", namespace="employee")),
+    path("users/", include("users.urls", namespace="users")),
 ]
