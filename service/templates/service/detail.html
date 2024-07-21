@@ -1,0 +1,31 @@
+{% extends 'catalog/base.html' %}
+{% load media %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <div class="card mb-4 box-shadow">
+                <div class="card-body">
+                    <h1 class="card-title">{{ object.title }}</h1>
+                    <img class="card-img-top" src="{{ object.preview | media_filter }}">
+                    <ul class="list-unstyled mt-3 mb-4 text-start m-3">
+                        <li>- {{ object.slug }}</li>
+                        <li>- {{ object.content }}</li>
+                        <li>- {{ object.preview }}</li>
+                        <li>- {{ object.created_at }}</li>
+                    </ul>
+                    <div class="btn-group">
+                        <a href="{% url 'blogpost:edit' object.pk %}"
+                           class="btn btn-lg btn-block btn-outline-primary">Править</a>
+                        <a href="{% url 'blogpost:delete' object.pk %}"
+                           class="btn btn-lg btn-block btn-outline-danger">Удалить</a>
+                    </div>
+                    <div class="card-footer">
+                        Посещений: {{ object.number_of_views }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
