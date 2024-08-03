@@ -1,3 +1,4 @@
+from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
     CreateView,
@@ -25,6 +26,7 @@ class EmployeeCreateView(CreateView):
 
     model = Employee
     form_class = EmployeeForm
+    success_url = reverse_lazy("employee:employees")
 
 
 class EmployeeDetailView(DetailView):
@@ -33,6 +35,7 @@ class EmployeeDetailView(DetailView):
     """
 
     model = Employee
+    template_name = "employee/employee_detail.html"
 
 
 class EmployeeUpdateView(UpdateView):
@@ -41,6 +44,8 @@ class EmployeeUpdateView(UpdateView):
     """
 
     model = Employee
+    form_class = EmployeeForm
+    success_url = reverse_lazy("employee:employees")
 
 
 class EmployeeDeleteView(DeleteView):

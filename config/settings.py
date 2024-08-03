@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+from django.urls import reverse_lazy
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -83,8 +84,12 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("NAME"),
+        "USER": os.getenv("USER"),
+        "HOST": os.getenv("HOST"),
+        "PORT": os.getenv("PORT"),
+        "PASSWORD": os.getenv("PASSWORD"),
     }
 }
 
@@ -133,8 +138,8 @@ STATICFILES_DIRS = (BASE_DIR / "static",)
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = "media/"
-MEDIA_ROOT = "media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# AUTH_USER_MODEL = 'users.User'
-# LOGIN_REDIRECT_URL = '/'
-# LOGOUT_REDIRECT_URL = '/'
+AUTH_USER_MODEL = "users.User"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"

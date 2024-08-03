@@ -12,7 +12,7 @@ from employee.views import (
 app_name = EmployeeConfig.name
 
 urlpatterns = [
-    path("", EmployeeListView.as_view(), name="employee"),
+    path("", EmployeeListView.as_view(), name="employees"),
     path("create/", EmployeeCreateView.as_view(), name="create-employee"),
     path("detail/<int:pk>/", EmployeeDetailView.as_view(), name="detail-employee"),
     path("update/<int:pk>/", EmployeeUpdateView.as_view(), name="update-employee"),

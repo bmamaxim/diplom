@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% extends 'service/base.html' %}
+{% block content %}
+<main>
+    <div class="album py-5 bg-body-tertiary">
+        <div class="container">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                <div class="col-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <p class="card-text md-6">Вход в учетную запись</p>
+                            <form method="post" enctype="multipart/form-data" class="form-floating">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <div class="btn-group">
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Войти</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

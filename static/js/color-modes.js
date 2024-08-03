@@ -1,132 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <title>Page not found at /docs/5.3/assets/js/color-modes.js</title>
-  <meta name="robots" content="NONE,NOARCHIVE">
-  <style type="text/css">
-    html * { padding:0; margin:0; }
-    body * { padding:10px 20px; }
-    body * * { padding:0; }
-    body { font:small sans-serif; background:#eee; color:#000; }
-    body>div { border-bottom:1px solid #ddd; }
-    h1 { font-weight:normal; margin-bottom:.4em; }
-    h1 span { font-size:60%; color:#666; font-weight:normal; }
-    table { border:none; border-collapse: collapse; width:100%; }
-    td, th { vertical-align:top; padding:2px 3px; }
-    th { width:12em; text-align:right; color:#666; padding-right:.5em; }
-    #info { background:#f6f6f6; }
-    #info ol { margin: 0.5em 4em; }
-    #info ol li { font-family: monospace; }
-    #summary { background: #ffc; }
-    #explanation { background:#eee; border-bottom: 0px none; }
-    pre.exception_value { font-family: sans-serif; color: #575757; font-size: 1.5em; margin: 10px 0 10px 0; }
-  </style>
-</head>
-<body>
-  <div id="summary">
-    <h1>Page not found <span>(404)</span></h1>
+/*!
+ * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
+ * Copyright 2011-2023 The Bootstrap Authors
+ * Licensed under the Creative Commons Attribution 3.0 Unported License.
+ */
 
-    <table class="meta">
-      <tr>
-        <th>Request Method:</th>
-        <td>GET</td>
-      </tr>
-      <tr>
-        <th>Request URL:</th>
-        <td>http://127.0.0.1:8000/docs/5.3/assets/js/color-modes.js</td>
-      </tr>
+(() => {
+  'use strict'
 
-    </table>
-  </div>
-  <div id="info">
+  const getStoredTheme = () => localStorage.getItem('theme')
+  const setStoredTheme = theme => localStorage.setItem('theme', theme)
 
-      <p>
-      Using the URLconf defined in <code>config.urls</code>,
-      Django tried these URL patterns, in this order:
-      </p>
-      <ol>
+  const getPreferredTheme = () => {
+    const storedTheme = getStoredTheme()
+    if (storedTheme) {
+      return storedTheme
+    }
 
-          <li>
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
 
-                admin/
+  const setTheme = theme => {
+    if (theme === 'auto') {
+      document.documentElement.setAttribute('data-bs-theme', (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
+    } else {
+      document.documentElement.setAttribute('data-bs-theme', theme)
+    }
+  }
 
+  setTheme(getPreferredTheme())
 
-          </li>
+  const showActiveTheme = (theme, focus = false) => {
+    const themeSwitcher = document.querySelector('#bd-theme')
 
-          <li>
+    if (!themeSwitcher) {
+      return
+    }
 
+    const themeSwitcherText = document.querySelector('#bd-theme-text')
+    const activeThemeIcon = document.querySelector('.theme-icon-active use')
+    const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
+    const svgOfActiveBtn = btnToActive.querySelector('svg use').getAttribute('href')
 
+    document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+      element.classList.remove('active')
+      element.setAttribute('aria-pressed', 'false')
+    })
 
+    btnToActive.classList.add('active')
+    btnToActive.setAttribute('aria-pressed', 'true')
+    activeThemeIcon.setAttribute('href', svgOfActiveBtn)
+    const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`
+    themeSwitcher.setAttribute('aria-label', themeSwitcherLabel)
 
+    if (focus) {
+      themeSwitcher.focus()
+    }
+  }
 
-                [name='home']
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    const storedTheme = getStoredTheme()
+    if (storedTheme !== 'light' && storedTheme !== 'dark') {
+      setTheme(getPreferredTheme())
+    }
+  })
 
-          </li>
+  window.addEventListener('DOMContentLoaded', () => {
+    showActiveTheme(getPreferredTheme())
 
-          <li>
-
-
-
-
-                create/
-                [name='create-service']
-
-          </li>
-
-          <li>
-
-
-
-
-                detail/&lt;int:pk&gt;/
-                [name='detail-service']
-
-          </li>
-
-          <li>
-
-
-
-
-                update/&lt;int:pk&gt;/
-                [name='update-service']
-
-          </li>
-
-          <li>
-
-
-
-
-                delete/&lt;int:pk&gt;/
-                [name='delete-service']
-
-          </li>
-
-          <li>
-
-                employee/
-
-
-          </li>
-
-      </ol>
-      <p>
-
-          The current path, <code>docs/5.3/assets/js/color-modes.js</code>,
-
-        didn’t match any of these.
-      </p>
-
-  </div>
-
-  <div id="explanation">
-    <p>
-      You’re seeing this error because you have <code>DEBUG = True</code> in
-      your Django settings file. Change that to <code>False</code>, and Django
-      will display a standard 404 page.
-    </p>
-  </div>
-</body>
-</html>
+    document.querySelectorAll('[data-bs-theme-value]')
+      .forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          const theme = toggle.getAttribute('data-bs-theme-value')
+          setStoredTheme(theme)
+          setTheme(theme)
+          showActiveTheme(theme, true)
+        })
+      })
+  })
+})()

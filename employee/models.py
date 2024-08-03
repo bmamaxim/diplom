@@ -1,6 +1,8 @@
 from django.db import models
 
-from service.models import NULLABLE
+from config import settings
+
+NULLABLE = {"blank": True, "null": True}
 
 
 class Employee(models.Model):
@@ -8,26 +10,34 @@ class Employee(models.Model):
     Модель сотрудника клиники.
     """
 
+    THERAPIST = "Therapist"
+    OPHTHALMOLOGIST = "Ophthalmologist"
+    NURSE = "nurse"
+
+    DOCTOR = (
+        (THERAPIST, "Терапевт"),
+        (OPHTHALMOLOGIST, "Офтальмолог"),
+        (NURSE, "Медсестра"),
+    )
+
     name = models.CharField(
-        max_length=300,
-        help_text="Введите название направления",
-        verbose_name="название",
+        choices=DOCTOR,
+        default=None,
+        help_text="Выберите название направления",
+        verbose_name="Название",
     )
     room = models.IntegerField(
-        help_text="Укажите номер кабинета", verbose_name="кабинет"
+        help_text="Укажите номер кабинета", verbose_name="Кабинет"
     )
-    first_name = models.CharField(
-        max_length=100, help_text="Имя врача", verbose_name="имя", **NULLABLE
+    employee = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, **NULLABLE
     )
-    last_name = models.CharField(
-        max_length=100, help_text="Фамилия врача", verbose_name="Фамилмя", **NULLABLE
-    )
-    image = models.ImageField(
+    photo = models.ImageField(
         upload_to="image/", verbose_name="изображение", **NULLABLE
     )
 
     def __str__(self):
-        return f"{self.name}" f"{self.room}" f"{self.first_name}" f"{self.last_name}"
+        return f"{self.name}" f"{self.room}" f"{self.employee}"
 
     class Meta:
         verbose_name = "сотрудник"

@@ -5,6 +5,10 @@ from service.models import NULLABLE
 
 
 class User(AbstractUser):
+    """
+    Модель Пользователь.
+    """
+
     username = None
     first_name = models.ImageField(
         max_length=50, verbose_name="Имя", help_text="Введите ваше имя", **NULLABLE

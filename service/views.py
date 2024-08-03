@@ -11,13 +11,22 @@ from service.forms import ServiceForm
 from service.models import Service
 
 
-class ServiceListView(ListView):
+class ServiceHomeView(ListView):
     """
     Класс контроллер домашней страницы.
     """
 
     model = Service
     template_name = "service/home.html"
+
+
+class ServiceListView(ListView):
+    """
+    Класс контроллер страницы списка услуг.
+    """
+
+    model = Service
+    template_name = "service/service_list.html"
 
 
 class ServiceCreateView(CreateView):
