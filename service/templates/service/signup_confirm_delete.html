@@ -12,12 +12,14 @@
                     </div>
                     <div class="card-body">
                         <form method="post">
+                            <p class="muted">{{ object.employee.name }} {{ object.time }} {{ object.date }}.
+                            </p>
                             {% csrf_token %}
                             <button type="submit" class="btn btn-lg btn-outline-danger">
-                                Удалить {{object.name }} ?
+                                Удалить?
                             </button>
                             <a type="submit" class="btn btn-lg btn-outline-primary"
-                               href="{% url 'service:home' %}">Отмена
+                               href="{% url 'service:list-signup' %}">Отмена
                             </a>
                         </form>
                     </div>

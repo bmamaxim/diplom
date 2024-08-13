@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
@@ -7,8 +8,10 @@ from django.views.generic import (
     DetailView,
 )
 
-from service.forms import ServiceForm
-from service.models import Service
+from employee.models import Employee
+from service.forms import ServiceForm, SignUpForm
+from service.models import Service, SignUp
+from users.models import User
 
 
 class ServiceHomeView(ListView):
@@ -65,3 +68,48 @@ class ServiceDeleteView(DeleteView):
 
     model = Service
     success_url = reverse_lazy("service:home")
+
+
+class SignUpCreateView(CreateView):
+    """
+    Класс контроллер записи на прием.
+    """
+
+    model = SignUp
+    form_class = SignUpForm
+    success_url = reverse_lazy("service:list-signup")
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.employee = Employee.objects.filter(pk=self.kwargs['pk']).first()
+        self.object.user = self.request.user
+        self.object.save()
+
+        return super().form_valid(form)
+
+
+class SignUpUpdateView(UpdateView):
+    """
+    Класс контроллер изменения записи на прием.
+    """
+
+    model = SignUp
+    form_class = SignUpForm
+    success_url = reverse_lazy("service:list-signup")
+
+
+class SignUpListView(ListView):
+    """
+    Класс контроллер списка записей на прием.
+    """
+
+    model = SignUp
+
+
+class SignUpDeleteView(DeleteView):
+    """
+    Класс контроллер удаления записи на прием.
+    """
+
+    model = SignUp
+    success_url = reverse_lazy("service:list-signup")

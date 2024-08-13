@@ -6,10 +6,10 @@
     <section class="py-5 text-center container">
         <div class="row py-lg-5">
             <div class="col-lg-6 col-md-8 mx-auto">
-                <h1 class="fw-light">Услуги Поликлиники</h1>
+                <h1 class="fw-light">Ваши записи</h1>
                 <p class="lead text-body-secondary"></p>
                 <p>
-                    <a href="{% url 'service:create-service' %}" class="btn btn-primary my-2">Создать услугу</a>
+
                 </p>
             </div>
         </div>
@@ -24,16 +24,19 @@
                         <h2 class="accordion-header">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                {{ object.name }}
+                                {{ object.user }}
                             </button>
                         </h2>
                         <div id="collapseOne" class="accordion-collapse collapse show"
                              data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                <strong>{{ object.description }}.</strong>
-                                <p class="muted">Воспользуйтесь <a href="{% url 'service:create-signup' %}"
-                                >записью</a> для получения медицинских услуг.</p>
-
+                                <strong>{{ object.employee.name }} {{ object.employee.employee.first_name }}.</strong>
+                                <p class="muted">{{ object.time }} {{ object.date }}. <a
+                                        href="{% url 'service:update-signup' object.pk %}"
+                                > ссылка на изменение записи.</a>
+                                    <a href="{% url 'service:delete-signup' object.pk %}"
+                                > ссылка на удаление записи.</a>
+                                </p>
                             </div>
                         </div>
                     </div>
