@@ -1,0 +1,49 @@
+<!doctype html>
+{% extends 'service/base.html' %}
+{% block content %}
+<main>
+
+    <section class="py-5 text-center container">
+        <div class="row py-lg-5">
+            <div class="col-lg-6 col-md-8 mx-auto">
+                <h1 class="fw-light">Ваши записи</h1>
+                <p class="lead text-body-secondary"></p>
+                <p>
+
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="album py-5 bg-body-tertiary">
+        <div class="container">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                {% for object in object_list %}
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                {{ object.user }}
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show"
+                             data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <strong>{{ object.employee.name }} {{ object.employee.employee.first_name }}.</strong>
+                                <p class="muted">{{ object.time }} {{ object.date }}. <a
+                                        href="{% url 'service:update-signup' object.pk %}"
+                                > ссылка на изменение записи.</a>
+                                    <a href="{% url 'service:delete-signup' object.pk %}"
+                                > ссылка на удаление записи.</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
