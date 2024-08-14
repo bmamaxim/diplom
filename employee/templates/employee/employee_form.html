@@ -32,23 +32,6 @@
                     </div>
                 </div>
             </div>
-                        <form method="post" enctype="multipart/form-data" class="form-floating">
-                <div class="card mb-4 box-shadow">
-                    <div class="card-header">
-                        <h4 class="my-0 font-weight-normal">Записаться</h4>
-                    </div>
-                    <div class="card-body">
-                        {% csrf_token %}
-                        {{ formset.management_form }}
-                        {% for form in formset.forms %}
-                        {{ form.as_p }}
-                        {% endfor %}
-                        <button type="submit" class="btn btn-lg btn-block btn-outline-primary">
-                            Сохранить
-                        </button>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
 </div>
