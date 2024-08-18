@@ -1,9 +1,12 @@
-from datetime import datetime, timedelta
+import datetime
 
 from django.db import models
 
 from config import settings
 from employee.models import Employee, NULLABLE
+
+
+
 
 
 class Service(models.Model):
@@ -43,37 +46,16 @@ class SignUp(models.Model):
     Модель записи.
     """
 
-    datetime_now = datetime.today().date()
-
-    TODAY = datetime_now
-    TOMORROW = datetime_now + timedelta(days=1)
-    DAY_AFTER_TOMORROW = datetime_now + timedelta(days=2)
-
-    DATE = (
-        (TODAY, TODAY),
-        (TOMORROW, TOMORROW),
-        (DAY_AFTER_TOMORROW, DAY_AFTER_TOMORROW),
-    )
-
-    EIGHT = "08:00"
-    NINE = "09:00"
-    TEN = "10:00"
-    ELEVEN = "11:00"
-    THIRTEEN = "13:00"
-    FOURTEEN = "14:00"
-    FIFTEEN = "15:00"
-    SIXTEEN = "16:00"
-
-    TIME = (
-        (EIGHT, "08:00"),
-        (NINE, "09:00"),
-        (TEN, "10:00"),
-        (ELEVEN, "11:00"),
-        (THIRTEEN, "13:00"),
-        (FOURTEEN, "14:00"),
-        (FIFTEEN, "15:00"),
-        (SIXTEEN, "16:00"),
-    )
+    time_list = [
+        datetime.time(hour=8).strftime("%H:%m:%S"),
+        datetime.time(hour=9).strftime("%H:%m:%S"),
+        datetime.time(hour=10).strftime("%H:%m:%S"),
+        datetime.time(hour=11).strftime("%H:%m:%S"),
+        datetime.time(hour=13).strftime("%H:%m:%S"),
+        datetime.time(hour=14).strftime("%H:%m:%S"),
+        datetime.time(hour=15).strftime("%H:%m:%S"),
+        datetime.time(hour=16).strftime("%H:%m:%S"),
+    ]
 
     employee = models.ForeignKey(
         Employee,
@@ -88,11 +70,13 @@ class SignUp(models.Model):
         verbose_name="Пациент",
         **NULLABLE,
     )
-    time = models.CharField(
-        choices=TIME, help_text="Выберите время записи", verbose_name="время записи"
+    time = models.TimeField(
+        help_text="Выберите время записи", verbose_name="время записи",
+        **NULLABLE,
     )
     date = models.DateField(
-        choices=DATE, verbose_name="Дата записи", help_text="Выберите дату записи"
+        verbose_name="Дата записи", help_text="Выберите дату записи",
+        **NULLABLE,
     )
 
     def __str__(self):
