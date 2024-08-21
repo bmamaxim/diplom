@@ -4,6 +4,7 @@ from config import settings
 def examination(date: str, data: dict) -> dict:
     """
     Функция фильтрации данных по дате.
+    Проверка не атуальна, но оставлю написанную функцию.
     :param date: str
     :param data: dict
     :return: dict
@@ -19,6 +20,7 @@ def time_processing(queryset: dict, time_list: list) -> list:
     """
     Функция удаляет из списка time_list занятое время,
     возвращает список свободного времени у специалиста.
+    Зависит только от занятости специалиста.
     :param queryset: dict
     :param time_list: list
     :return: list
@@ -34,6 +36,7 @@ def time_minimum(time_list: list, date: list) -> list:
     Функция возвращает исправленный список со временем
     если дата записи совпвдвет с днем записи.
     Иначе возвращает список со времением без изменений.
+    Не позволяет записаться в прошлое время текущего дня.
     :param date: list
     :param time_list:
     :return: list
@@ -55,6 +58,7 @@ def sign_up_time(filter_date_time: list, time_filter: list) -> list:
     и корректирует время записи в зависимости от даты и времени.
     Возвращает исправленный список с временем записи к специалисту,
     из которго вычитает все время других специалистов на ту же дату.
+    Касается только времени записей к специалисту пользователя.
     :param filter_date_time: list
     :param time_filter: list
     :return: list

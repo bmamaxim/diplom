@@ -13,15 +13,12 @@ from django.views.generic import (
 from config import settings
 from employee.models import Employee
 from employee.service import (
-    examination,
     time_processing,
     time_minimum,
-    re_lock_check,
     sign_up_time,
 )
 from service.forms import ServiceForm, SignUpForm
 from service.models import Service, SignUp
-from users.models import User
 
 
 class ServiceHomeView(ListView):
@@ -145,6 +142,7 @@ def sign_up(request, pk: int):
         datetime.time(hour=16).strftime("%H:%M:%S"),
     ]
     user = request.user
+    # вытаскиваем первую запись сотрудника по id.
     employee = Employee.objects.filter(pk=pk).first()
     date_max = settings.TODAY + datetime.timedelta(days=7)
     if request.GET.get("date") is None:
@@ -159,8 +157,11 @@ def sign_up(request, pk: int):
         return render(request, "service/sign_up.html", context)
     else:
         date = request.GET.get("date")
+        # вытаскиваем из базы все записи пользователя.
         sign = SignUp.objects.filter(user=user).all()
+        # фильтруем записи по значению сотрудника - employee.
         doctors = sign.filter(employee=employee)
+        # фильтруем записи к врачу по дате.
         data_sign = doctors.filter(date=date)
         if data_sign:
             context = {
@@ -172,7 +173,8 @@ def sign_up(request, pk: int):
             return render(request, "service/answer.html", context)
         else:
             data_sign = SignUp.objects.filter(employee=employee).all()
-            queryset = examination(date, data_sign)
+            # examination(date, data_sign) не актуальная проверка, но это не точно
+            queryset = data_sign.filter(date=date)
             time = time_processing(queryset, time_list)
             time_filter = time_minimum(time, date)
             filter_date_time = sign.filter(date=date)
@@ -196,15 +198,23 @@ def sign_up_info(request, pk: int):
     """
     if request.method == "POST":
         user = request.user
+        # вытаскиваем первую запись сотрудника по id.
         employee = Employee.objects.filter(pk=pk).first()
         date = request.POST.get("date")
         time = request.POST.get("time")
         application = SignUp(user=user, employee=employee, date=date, time=time)
-        application.save()
-        return render(
-            request,
-            "service/sign_up_info.html",
-            {"user": user, "employee": employee, "date": date, "time": time},
-        )
+        query = SignUp.objects.filter(user=user, employee=employee, date=date, time=time).first()
+        if query:
+            # выдаем данные по записи при повторной тправке формы.
+            return render(request, "service/sign_up_info.html",
+                          {"user": user, "employee": employee, "date": date, "time": time})
+        else:
+            # после проверки формы на существование записи сохраняем с выводом данныых по записи.
+            application.save()
+            return render(
+                request,
+                "service/sign_up_info.html",
+                {"user": user, "employee": employee, "date": date, "time": time},
+            )
     else:
         return render(request, "service/sign_up_info.html")
