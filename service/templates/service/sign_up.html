@@ -1,0 +1,58 @@
+{% extends 'service/base.html' %}
+{% load tags %}
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Поликлиника</h1>
+    <p class="lead">Запись к {{ employee.employee }}</p>
+    <div class="container">
+        <div class="row text-start">
+            <div class="col-lg-6 col-md-4 col-sm-12">
+                <div class="card mb-4 box-shadow">
+                    <div class="card-header">
+                        <h4 class="my-0 font-weight-normal">
+                            {{ user.email }}
+                            {{ step }}
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        {% if step_1 %}
+                        <form action="{% url 'service:sign_up' employee.pk %}" method="GET"
+                              enctype="multipart/form-data"
+                              class="form-floating">
+                            <div class="form-group row col-3 mb-3">
+                                <label>Выберите дату:</label>
+                                <input type="date" name="date" value={{date_min}} min={{date_min}} max="{{date_max}}">
+                                <button
+                                        type="submit" class=" mb-2 btn btn-sm btn-outline-secondary">Next
+                                </button>
+                            </div>
+                        </form>
+                        {% else %}
+                        <form action="{% url 'service:sign_up_info' employee.pk %}" method="POST"
+                              enctype="multipart/form-data"
+                              class="form-floating">
+                            {% csrf_token %}
+                            <div class="form-group row col-3 mb-3">
+                                <label>Время:</label>
+                                <select name="time" id="select">
+                                    {% for time in time_list %}
+                                    <option value="{{time}}">{{ time }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <input type="hidden" name="date" value="{{day}}">
+                            <a type="submit" class=" mb-2 btn btn-sm btn-outline-secondary"
+                               href="{% url 'service:sign_up' employee.pk %}">Back</a>
+                            <button
+                                    type="submit" class=" mb-2 btn btn-sm btn-outline-secondary">Next
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

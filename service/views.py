@@ -1,3 +1,6 @@
+import datetime
+
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
@@ -7,10 +10,15 @@ from django.views.generic import (
     DetailView,
 )
 
+from config import settings
 from employee.models import Employee
+from employee.service import (
+    time_processing,
+    time_minimum,
+    sign_up_time,
+)
 from service.forms import ServiceForm, SignUpForm
 from service.models import Service, SignUp
-from users.models import User
 
 
 class ServiceHomeView(ListView):
@@ -71,17 +79,19 @@ class ServiceDeleteView(DeleteView):
 
 class SignUpCreateView(CreateView):
     """
-    Класс контроллер записи на прием.
+    Класс контроллер записи на прием
+    выбор даты записи.
     """
 
     model = SignUp
     form_class = SignUpForm
-    success_url = reverse_lazy("service:list-signup")
+    success_url = reverse_lazy("service:update-signup")
 
     def form_valid(self, form):
         self.object = form.save()
-        self.object.employee = Employee.objects.filter(pk=self.kwargs['pk']).first()
+        self.object.employee = Employee.objects.filter(pk=self.kwargs["pk"]).first()
         self.object.user = self.request.user
+
         self.object.save()
 
         return super().form_valid(form)
@@ -112,3 +122,99 @@ class SignUpDeleteView(DeleteView):
 
     model = SignUp
     success_url = reverse_lazy("service:list-signup")
+
+
+def sign_up(request, pk: int):
+    """
+    Функция записи к специалисту.
+    :param request: dict
+    :param pk: int
+    :return:
+    """
+    time_list = [
+        datetime.time(hour=8).strftime("%H:%M:%S"),
+        datetime.time(hour=9).strftime("%H:%M:%S"),
+        datetime.time(hour=10).strftime("%H:%M:%S"),
+        datetime.time(hour=11).strftime("%H:%M:%S"),
+        datetime.time(hour=13).strftime("%H:%M:%S"),
+        datetime.time(hour=14).strftime("%H:%M:%S"),
+        datetime.time(hour=15).strftime("%H:%M:%S"),
+        datetime.time(hour=16).strftime("%H:%M:%S"),
+    ]
+    user = request.user
+    # вытаскиваем первую запись сотрудника по id.
+    employee = Employee.objects.filter(pk=pk).first()
+    date_max = settings.TODAY + datetime.timedelta(days=7)
+    if request.GET.get("date") is None:
+        context = {
+            "step": "Выберите дату записи",
+            "user": user,
+            "employee": employee,
+            "date_min": settings.TODAY.strftime("%Y-%m-%d"),
+            "date_max": date_max.strftime("%Y-%m-%d"),
+            "step_1": True,
+        }
+        return render(request, "service/sign_up.html", context)
+    else:
+        date = request.GET.get("date")
+        # вытаскиваем из базы все записи пользователя.
+        sign = SignUp.objects.filter(user=user).all()
+        # фильтруем записи по значению сотрудника - employee.
+        doctors = sign.filter(employee=employee)
+        # фильтруем записи к врачу по дате.
+        data_sign = doctors.filter(date=date)
+        if data_sign:
+            context = {
+                "title": "Вы уже записаны к этому врачу",
+                "doctor": employee,
+                "date": date,
+                "you_sign": data_sign,
+            }
+            return render(request, "service/answer.html", context)
+        else:
+            data_sign = SignUp.objects.filter(employee=employee).all()
+            # examination(date, data_sign) не актуальная проверка, но это не точно
+            queryset = data_sign.filter(date=date)
+            time = time_processing(queryset, time_list)
+            time_filter = time_minimum(time, date)
+            filter_date_time = sign.filter(date=date)
+            lust_time = sign_up_time(filter_date_time, time_filter)
+            context = {
+                "step": "Выерите время записи",
+                "user": user,
+                "employee": employee,
+                "day": date,
+                "time_list": lust_time,
+            }
+            return render(request, "service/sign_up.html", context)
+
+
+def sign_up_info(request, pk: int):
+    """
+    Функция записывает данные по записи к специалисту.
+    :param request: dict
+    :param pk: int
+    :return:
+    """
+    if request.method == "POST":
+        user = request.user
+        # вытаскиваем первую запись сотрудника по id.
+        employee = Employee.objects.filter(pk=pk).first()
+        date = request.POST.get("date")
+        time = request.POST.get("time")
+        application = SignUp(user=user, employee=employee, date=date, time=time)
+        query = SignUp.objects.filter(user=user, employee=employee, date=date, time=time).first()
+        if query:
+            # выдаем данные по записи при повторной тправке формы.
+            return render(request, "service/sign_up_info.html",
+                          {"user": user, "employee": employee, "date": date, "time": time})
+        else:
+            # после проверки формы на существование записи сохраняем с выводом данныых по записи.
+            application.save()
+            return render(
+                request,
+                "service/sign_up_info.html",
+                {"user": user, "employee": employee, "date": date, "time": time},
+            )
+    else:
+        return render(request, "service/sign_up_info.html")
