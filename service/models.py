@@ -6,9 +6,6 @@ from config import settings
 from employee.models import Employee, NULLABLE
 
 
-
-
-
 class Service(models.Model):
     """
     Модель предоставляемых услуг.
@@ -71,11 +68,13 @@ class SignUp(models.Model):
         **NULLABLE,
     )
     time = models.TimeField(
-        help_text="Выберите время записи", verbose_name="время записи",
+        help_text="Выберите время записи",
+        verbose_name="время записи",
         **NULLABLE,
     )
     date = models.DateField(
-        verbose_name="Дата записи", help_text="Выберите дату записи",
+        verbose_name="Дата записи",
+        help_text="Выберите дату записи",
         **NULLABLE,
     )
 
