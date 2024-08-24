@@ -7,9 +7,11 @@
             <div class="col-lg-6 col-md-8 mx-auto">
                 <h1 class="fw-light">Наши Специалисты</h1>
                 <p class="lead text-body-secondary"></p>
+                {% if perm.user.create_employee %}
                 <p>
                     <a href="{% url 'employee:create-employee' %}" class="btn btn-primary my-2">Добавить Специалиста</a>
                 </p>
+                {% endif %}
             </div>
         </div>
     </section>
@@ -24,10 +26,15 @@
                             <p class="card-text">{{ object.name }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
+                                    {% if perm.user.create_employee %}
                                     <a type="button" class="btn btn-sm btn-outline-secondary"
                                        href="{% url 'employee:detail-employee' object.pk %}">Подробности
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                    {% endif %}
+
+                                    <a type="button" class="btn btn-sm btn-outline-secondary"
+                                       href="{% url 'service:sign_up' object.pk %}">SigUP
+                                    </a>
                                 </div>
                             </div>
                         </div>

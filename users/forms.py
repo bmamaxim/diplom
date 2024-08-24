@@ -18,12 +18,12 @@ class UserProfileForm(UserChangeForm):
 
     class Meta:
         model = User
-        fields = ("email",)
+        fields = ("email", "tg_id")
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for fild_name, field in self.fields.items():
-            field.widget.attrs["class"] = "form-control"
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     for fild_name, field in self.fields.items():
+    #         field.widget.attrs["class"] = "form-control"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

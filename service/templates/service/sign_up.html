@@ -18,13 +18,15 @@
                         {% if step_1 %}
                         <form action="{% url 'service:sign_up' employee.pk %}" method="GET"
                               enctype="multipart/form-data"
-                              class="form-floating">
-                            <div class="form-group row col-3 mb-3">
+                              class="form-floating mb-2">
+                            <div class="form-group mb-2 row col-3 mb-3">
                                 <label>Выберите дату:</label>
                                 <input type="date" name="date" value={{date_min}} min={{date_min}} max="{{date_max}}">
                                 <button
                                         type="submit" class=" mb-2 btn btn-sm btn-outline-secondary">Next
                                 </button>
+                                <a type="submit" class=" mb-2 btn btn-sm btn-outline-secondary"
+                               href="{% url 'employee:employees' %}">Back</a>
                             </div>
                         </form>
                         {% else %}

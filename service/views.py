@@ -1,5 +1,7 @@
 import datetime
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -16,6 +18,7 @@ from employee.service import (
     time_processing,
     time_minimum,
     sign_up_time,
+    deleting_old_entries,
 )
 from service.forms import ServiceForm, SignUpForm
 from service.models import Service, SignUp
@@ -39,7 +42,7 @@ class ServiceListView(ListView):
     template_name = "service/service_list.html"
 
 
-class ServiceCreateView(CreateView):
+class ServiceCreateView(UserPassesTestMixin, CreateView):
     """
     Класс контроллер страницы создания услуги.
     """
@@ -48,8 +51,13 @@ class ServiceCreateView(CreateView):
     form_class = ServiceForm
     success_url = reverse_lazy("service:home")
 
+    def test_func(self):
+        if self.request.user.has_perm("create_service"):
+            return True
+        return self.handle_no_permission()
 
-class ServiceUpdateView(UpdateView):
+
+class ServiceUpdateView(UserPassesTestMixin, UpdateView):
     """
     Класс контроллер изменения сервиса.
     """
@@ -58,8 +66,13 @@ class ServiceUpdateView(UpdateView):
     form_class = ServiceForm
     success_url = reverse_lazy("service:home")
 
+    def test_func(self):
+        if self.request.user.has_perm("update_service"):
+            return True
+        return self.handle_no_permission()
 
-class ServiceDetailView(DetailView):
+
+class ServiceDetailView(LoginRequiredMixin, DetailView):
     """
     Класс контроллер просмотра подробностей сервиса.
     """
@@ -68,7 +81,7 @@ class ServiceDetailView(DetailView):
     template_name = "service/detail.html"
 
 
-class ServiceDeleteView(DeleteView):
+class ServiceDeleteView(UserPassesTestMixin, DeleteView):
     """
     Класс контроллер удаления сервиса.
     """
@@ -76,8 +89,13 @@ class ServiceDeleteView(DeleteView):
     model = Service
     success_url = reverse_lazy("service:home")
 
+    def test_func(self):
+        if self.request.user.has_perm("delete_service"):
+            return True
+        return self.handle_no_permission()
 
-class SignUpCreateView(CreateView):
+
+class SignUpCreateView(UserPassesTestMixin, CreateView):
     """
     Класс контроллер записи на прием
     выбор даты записи.
@@ -87,17 +105,13 @@ class SignUpCreateView(CreateView):
     form_class = SignUpForm
     success_url = reverse_lazy("service:update-signup")
 
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.employee = Employee.objects.filter(pk=self.kwargs["pk"]).first()
-        self.object.user = self.request.user
-
-        self.object.save()
-
-        return super().form_valid(form)
+    def test_func(self):
+        if self.request.user.has_perm("service.signup_create"):
+            return True
+        return self.handle_no_permission()
 
 
-class SignUpUpdateView(UpdateView):
+class SignUpUpdateView(UserPassesTestMixin, UpdateView):
     """
     Класс контроллер изменения записи на прием.
     """
@@ -106,16 +120,26 @@ class SignUpUpdateView(UpdateView):
     form_class = SignUpForm
     success_url = reverse_lazy("service:list-signup")
 
+    def test_func(self):
+        if self.request.user.has_perm("service.signup_create"):
+            return True
+        return self.handle_no_permission()
 
-class SignUpListView(ListView):
+
+class SignUpListView(LoginRequiredMixin, ListView):
     """
     Класс контроллер списка записей на прием.
     """
 
     model = SignUp
 
+    def get_queryset(self):
+        if self.request.user.groups.filter(name="registry"):
+            return SignUp.objects.all()
+        return SignUp.objects.filter(user=self.request.user)
 
-class SignUpDeleteView(DeleteView):
+
+class SignUpDeleteView(UserPassesTestMixin, DeleteView):
     """
     Класс контроллер удаления записи на прием.
     """
@@ -123,7 +147,12 @@ class SignUpDeleteView(DeleteView):
     model = SignUp
     success_url = reverse_lazy("service:list-signup")
 
+    def test_func(self):
+        if self.request.user.groups.filter(name="registry"):
+            return True
 
+
+@login_required
 def sign_up(request, pk: int):
     """
     Функция записи к специалисту.
@@ -189,6 +218,7 @@ def sign_up(request, pk: int):
             return render(request, "service/sign_up.html", context)
 
 
+@login_required
 def sign_up_info(request, pk: int):
     """
     Функция записывает данные по записи к специалисту.
@@ -203,11 +233,16 @@ def sign_up_info(request, pk: int):
         date = request.POST.get("date")
         time = request.POST.get("time")
         application = SignUp(user=user, employee=employee, date=date, time=time)
-        query = SignUp.objects.filter(user=user, employee=employee, date=date, time=time).first()
+        query = SignUp.objects.filter(
+            user=user, employee=employee, date=date, time=time
+        ).first()
         if query:
             # выдаем данные по записи при повторной тправке формы.
-            return render(request, "service/sign_up_info.html",
-                          {"user": user, "employee": employee, "date": date, "time": time})
+            return render(
+                request,
+                "service/sign_up_info.html",
+                {"user": user, "employee": employee, "date": date, "time": time},
+            )
         else:
             # после проверки формы на существование записи сохраняем с выводом данныых по записи.
             application.save()

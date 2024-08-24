@@ -1,4 +1,22 @@
+from datetime import datetime
+
 from config import settings
+from service.models import SignUp
+
+
+def deleting_old_entries():
+    """
+    Функция удаляет все устаревшие записи к специалистам.
+    :return: None
+    """
+    signup = SignUp.objects.all()
+    today = settings.TODAY
+    date = today.date()
+    for sign in signup:
+        if datetime.strptime(f"{sign.date}", "%Y-%m-%d") < datetime.strptime(
+            f"{date}", "%Y-%m-%d"
+        ):
+            sign.delete()
 
 
 def examination(date: str, data: dict) -> dict:
@@ -71,7 +89,3 @@ def sign_up_time(filter_date_time: list, time_filter: list) -> list:
         for time in sign_up_time_date:
             time_filter.remove(time)
     return time_filter
-
-
-def re_lock_check(queryset, employee, date):
-    pass
