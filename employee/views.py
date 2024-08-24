@@ -19,6 +19,13 @@ class EmployeeListView(ListView):
 
     model = Employee
 
+    def get_queryset(self):
+        search = self.request.GET.get('search', '')
+        if search:
+            return Employee.objects.filter(name=search)
+        else:
+            return Employee.objects.all()
+
 
 class EmployeeCreateView(UserPassesTestMixin, CreateView):
     """

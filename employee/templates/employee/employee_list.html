@@ -14,6 +14,10 @@
                 {% endif %}
             </div>
         </div>
+        <form class="form-inline my-to my-lg-0" action="{% url 'employee:employees' %}">
+            <input class="form control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-sm btn-outline-secondary md-12" type="submit">Поиск</button>
+        </form>
     </section>
     <div class="album py-5 bg-body-tertiary">
         <div class="container">
