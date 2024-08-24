@@ -43,17 +43,6 @@ class SignUp(models.Model):
     Модель записи.
     """
 
-    time_list = [
-        datetime.time(hour=8).strftime("%H:%m:%S"),
-        datetime.time(hour=9).strftime("%H:%m:%S"),
-        datetime.time(hour=10).strftime("%H:%m:%S"),
-        datetime.time(hour=11).strftime("%H:%m:%S"),
-        datetime.time(hour=13).strftime("%H:%m:%S"),
-        datetime.time(hour=14).strftime("%H:%m:%S"),
-        datetime.time(hour=15).strftime("%H:%m:%S"),
-        datetime.time(hour=16).strftime("%H:%m:%S"),
-    ]
-
     employee = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,

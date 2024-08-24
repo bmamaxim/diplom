@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
@@ -19,7 +20,7 @@ class EmployeeListView(ListView):
     model = Employee
 
 
-class EmployeeCreateView(CreateView):
+class EmployeeCreateView(UserPassesTestMixin, CreateView):
     """
     Классс контроллер регистрации сотрудников.
     """
@@ -42,7 +43,7 @@ class EmployeeDetailView(DetailView):
         return context_data
 
 
-class EmployeeUpdateView(UpdateView):
+class EmployeeUpdateView(UserPassesTestMixin, UpdateView):
     """
     Класс контроллер изменить данные сотрудника.
     """
@@ -52,7 +53,7 @@ class EmployeeUpdateView(UpdateView):
     success_url = reverse_lazy("employee:employees")
 
 
-class EmployeeDeleteView(DeleteView):
+class EmployeeDeleteView(UserPassesTestMixin, DeleteView):
     """
     Класс контроллер удаления данных сотрудника.
     """

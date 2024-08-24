@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.decorators.cache import cache_page
 
 from employee.apps import EmployeeConfig
 from employee.views import (
@@ -12,7 +13,7 @@ from employee.views import (
 app_name = EmployeeConfig.name
 
 urlpatterns = [
-    path("", EmployeeListView.as_view(), name="employees"),
+    path("", cache_page(60)(EmployeeListView.as_view()), name="employees"),
     path("create/", EmployeeCreateView.as_view(), name="create-employee"),
     path("detail/<int:pk>/", EmployeeDetailView.as_view(), name="detail-employee"),
     path("update/<int:pk>/", EmployeeUpdateView.as_view(), name="update-employee"),

@@ -10,7 +10,10 @@
                 <h1 class="fw-light">Поликлиника</h1>
                 <p class="lead text-body-secondary">Некоторые услуги нашей поликлиники</p>
                 <p>
-                    <a href="{% url 'employee:employees' %}" class="btn btn-primary my-2">Специалисты</a>
+                    {% if perm.user.create_signup %}
+                    <a href="{% url 'employee:employees' %}" class="btn btn-warning my-2">Создать запись</a>
+                    {% endif %}
+                    <a href="{% url 'employee:employees' %}" class="btn btn-warning my-2">Записаться</a>
                     <a href="{% url 'service:list-service' %}" class="btn btn-secondary my-2">Все Услуги</a>
                 </p>
             </div>
@@ -28,9 +31,9 @@
                             <p class="card-text">{{ object.employee.employee }}.</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    <a type="button" class="btn btn-sm btn-outline-secondary"
                                             href="{% url 'service:detail-service' object.pk %}">View
-                                    </button>
+                                    </a>
                                     <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
                                 </div>
                                 <small class="text-body-secondary">9 mins</small>
