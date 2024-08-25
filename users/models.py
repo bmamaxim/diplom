@@ -10,7 +10,7 @@ class User(AbstractUser):
     """
 
     username = None
-    first_name = models.ImageField(
+    first_name = models.CharField(
         max_length=50, verbose_name="Имя", help_text="Введите ваше имя", **NULLABLE
     )
     last_name = models.CharField(
@@ -24,6 +24,11 @@ class User(AbstractUser):
         unique=True,
         verbose_name="Элктронная почта",
         help_text="Введите адрес электронной почты",
+    )
+    phone = models.IntegerField(
+        verbose_name="Номер телефона",
+        help_text="Введите номер телефона",
+        **NULLABLE
     )
     ver_code = models.CharField(
         max_length=4, verbose_name="Код верификации", **NULLABLE

@@ -10,11 +10,14 @@
                 <h1 class="fw-light">Поликлиника</h1>
                 <p class="lead text-body-secondary">Некоторые услуги нашей поликлиники</p>
                 <p>
-                    {% if perm.user.create_signup %}
-                    <a href="{% url 'employee:employees' %}" class="btn btn-warning my-2">Создать запись</a>
+                    {% if perms.service.add_signup %}
+                    <a href="{% url 'service:create-signup' %}" class="btn btn-warning my-2">Создать запись</a>
                     {% endif %}
                     <a href="{% url 'employee:employees' %}" class="btn btn-warning my-2">Записаться</a>
                     <a href="{% url 'service:list-service' %}" class="btn btn-secondary my-2">Все Услуги</a>
+                    {% if perms.users.view_user %}
+                    <a href="{% url 'users:users' %}" class="btn btn-secondary my-2">Пациенты</a>
+                    {% endif %}
                 </p>
             </div>
         </div>

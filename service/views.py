@@ -18,7 +18,6 @@ from employee.service import (
     time_processing,
     time_minimum,
     sign_up_time,
-    deleting_old_entries,
 )
 from service.forms import ServiceForm, SignUpForm
 from service.models import Service, SignUp
@@ -40,6 +39,7 @@ class ServiceListView(ListView):
 
     model = Service
     template_name = "service/service_list.html"
+
 
 
 class ServiceCreateView(UserPassesTestMixin, CreateView):
@@ -104,9 +104,10 @@ class SignUpCreateView(UserPassesTestMixin, CreateView):
     model = SignUp
     form_class = SignUpForm
     success_url = reverse_lazy("service:update-signup")
+    permission_required = 'service.create_signup'
 
     def test_func(self):
-        if self.request.user.has_perm("service.signup_create"):
+        if self.request.user.has_perm('service.add_signup'):
             return True
         return self.handle_no_permission()
 
@@ -121,7 +122,7 @@ class SignUpUpdateView(UserPassesTestMixin, UpdateView):
     success_url = reverse_lazy("service:list-signup")
 
     def test_func(self):
-        if self.request.user.has_perm("service.signup_create"):
+        if self.request.user.has_perm("service.change_signup"):
             return True
         return self.handle_no_permission()
 

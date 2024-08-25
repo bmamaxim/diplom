@@ -14,7 +14,7 @@ from django.views.generic import (
 )
 
 from config import settings
-from users.forms import UserRegisterForm, UserProfileForm
+from users.forms import UserRegisterForm, UserProfileForm, UserCreateForm
 from users.models import User
 
 
@@ -24,14 +24,23 @@ class UsersListView(UserPassesTestMixin, ListView):
     """
 
     model = User
+    template_name = "users/users.html"
 
     def get_queryset(self):
         """
         Позволяем просматривать список пользователей только ркгистратуре.
         :return: queryset
         """
+        search = self.request.GET.get('search', '')
         if self.request.user.groups.filter(name="registry"):
-            return User.objects.all()
+            if search:
+                return User.objects.filter(email=search)
+            else:
+                return User.objects.all()
+
+    def test_func(self):
+        if self.request.user.has_perm('users.view_user'):
+            return True
 
 
 class UsersCreateView(CreateView):
@@ -40,9 +49,19 @@ class UsersCreateView(CreateView):
     """
 
     model = User
-    form_class = UserRegisterForm
+    form_class = UserCreateForm
     template_name = "users/register.html"
     success_url = reverse_lazy("users:verify")
+
+    def test_func(self):
+        if self.request.user.has_perm('users.create_user'):
+            return True
+
+
+    def get_form_class(self):
+        if self.request.user.groups.filter(name="registry"):
+            return UserCreateForm
+        return UserRegisterForm
 
     def form_valid(self, form):
         """
@@ -71,6 +90,7 @@ class UsersDetailView(UserPassesTestMixin, DetailView):
     """
 
     model = User
+    permission_required = 'users.detail_user'
 
     def get_queryset(self):
         """
@@ -79,6 +99,9 @@ class UsersDetailView(UserPassesTestMixin, DetailView):
         """
         if self.request.user.groups.filter(name="registry"):
             return User.objects.all()
+
+    def test_func(self):
+        return self.request.user.has_perm('users.detail_user')
 
 
 class UsersUpdateView(UserPassesTestMixin, UpdateView):
